@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Grocery Shopping</title>
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            padding-bottom: 50px; /* Prevent content from being hidden by fixed elements */
+        }
+
+        .product-box {
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            flex: 1 1 30%; /* Allow products to adjust based on screen size */
+        }
+
+        .product-box:hover {
+            transform: scale(1.05);
+        }
+
+        .product-image {
+            height: 150px; /* Fixed height */
+            object-fit: cover; /* Cover to maintain aspect ratio */
+        }
+
+        .products-box {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* Adjusts space between items */
+        }
+
+        .product-name, .product-price {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        #notification {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            display: none;
+            width: auto; /* Allow width to adjust */
+        }
+
+        .section-label {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .product-box {
+                flex: 1 1 100%; /* Full width on small screens */
+                margin-bottom: 15px; /* Adjust margin for smaller screens */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <h1 class="navbar-brand">Grocery Shopping</h1>
+            <button class="btn btn-primary" onclick="viewCart()">View Cart (<span id="cartCount">0</span>)</button>
+        </div>
+    </nav>
+
+    <div id="notification" class="alert alert-success" role="alert"></div>
+
+    <section class="container mt-4">
+        <div class="section-label text-center">
+            <h2>Our Products</h2>
+        </div>
+        <div class="products-box">
+
+            <div class="product-box col-md-3">
+                <img src="images/brocolli.jpg" alt="Broccoli" class="product-image img-fluid">
+                <div class="product-name">Broccoli</div>
+                <div class="product-price">250g-₹30</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Broccoli', 30)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-box col-md-3">
+                <img src="images/mango.jpg" alt="Mango" class="product-image img-fluid">
+                <div class="product-name">Mango</div>
+                <div class="product-price">250g-₹50</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Mango', 50)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-box col-md-3">
+                <img src="images/onion.jpg" alt="Onion" class="product-image img-fluid">
+                <div class="product-name">Onion</div>
+                <div class="product-price">250g-₹20</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Onion', 20)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-box col-md-3">
+                <img src="images/apple.jpg" alt="Apple" class="product-image img-fluid">
+                <div class="product-name">Apple</div>
+                <div class="product-price">250g-₹40</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Apple', 40)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-box col-md-3">
+                <img src="images/tomato.jpeg" alt="Tomato" class="product-image img-fluid">
+                <div class="product-name">Tomato</div>
+                <div class="product-price">250g-₹25</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Tomato', 25)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-box col-md-3">
+                <img src="images/peach.jpg" alt="Peach" class="product-image img-fluid">
+                <div class="product-name">Peach</div>
+                <div class="product-price">250g-₹60</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Peach', 60)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-box col-md-3">
+                <img src="images/Coriander.jpg" alt="Coriander" class="product-image img-fluid">
+                <div class="product-name">Coriander</div>
+                <div class="product-price">Bunch- ₹15</div>
+                <div class="buy-product">
+                    <button class="btn btn-success" onclick="addToCart('Coriander', 15)">Add to Cart</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        let cart = [];
+        let cartCount = 0;
+
+        function addToCart(productName, productPrice) {
+            cart.push({ name: productName, price: productPrice });
+            cartCount++;
+            document.getElementById('cartCount').textContent = cartCount;
+            showNotification(`${productName} has been added to your cart!`);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function viewCart()  {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            let cartDetails = "Items in your cart:\n";
+            let totalPrice = 0;
+
+            cart.forEach(item => {
+                cartDetails += `${item.name}: ₹${item.price}\n`;
+                totalPrice += item.price;
+            });
+
+            cartDetails += `\nTotal Price: ₹${totalPrice}`;
+            cartDetails += `\n\nProceed to checkout?`;
+
+            if (confirm(cartDetails)) {
+                window.location.href = `checkout.html?total=${totalPrice}`;
+            }
+        }
+        window.onload = function() {
+            if (!localStorage.getItem('isLoggedIn')) {
+                window.location.href = 'login.html';
+            }
+        };
+    </script>
+
+    <button onclick="logout()" class="btn btn-danger">Logout</button>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    
+</body>
+
+</html>

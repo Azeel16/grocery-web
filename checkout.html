@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        footer {
+            background-color: #f0f0f0; /* light gray background */
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #666; /* dark gray text */
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .checkout-container {
+            padding: 20px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+
+        .checkout-header {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .order-summary {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+        }
+
+        .total-price {
+            font-size: 1.5rem;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .batteries-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .batteries-section input {
+            width: 60px;
+            margin: 10px;
+        }
+
+        .btn-checkout {
+            background-color: #28a745;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            margin-top: 20px;
+        }
+
+        .btn-checkout:hover {
+            background-color: #218838;
+        }
+
+        #notification {
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="checkout-container">
+        <div class="checkout-header">Checkout</div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="summary-item">
+                <span>Subtotal</span>
+                <span id="subtotal">₹0</span>
+            </div>
+            <div class="summary-item">
+                <span>Delivery Charges</span>
+                <span id="deliveryCharges">₹30</span>
+            </div>
+            <div class="summary-item">
+                <span>Discount</span>
+                <span id="discount">-₹0</span>
+            </div>
+            <hr>
+            <div class="summary-item total-price">
+                <span>Total</span>
+                <span id="totalPrice">₹0</span>
+            </div>
+        </div>
+
+        <!-- Batteries Section -->
+        <div class="batteries-section">
+            <label for="batteries">How many used batteries are you recycling?</label><br>
+            <input type="number" id="batteries" value="0" min="0">
+            <button class="btn btn-primary" onclick="calculateDiscount()">Done</button>
+        </div>
+
+        <!-- Checkout Button -->
+        <button class="btn-checkout" onclick="proceedToPayment()">Proceed to Payment</button>
+
+        <!-- Notification -->
+        <div id="notification" class="alert alert-success" role="alert"></div>
+    </div>
+
+    <script>
+        // Get URL parameters for total price
+        const urlParams = new URLSearchParams(window.location.search);
+        const total = parseFloat(urlParams.get('total'));
+
+        // Set subtotal
+        document.getElementById('subtotal').textContent = '₹' + total.toFixed(2);
+
+        // Delivery charges
+        const deliveryCharges = 30;
+
+        // Calculate discount based on number of used batteries
+        function calculateDiscount() {
+            const batteries = parseInt(document.getElementById('batteries').value);
+            let discount = 0;
+
+            if (batteries >= 2 && batteries < 5) {
+                discount = 20;
+            } else if (batteries >= 5) {
+                discount = total * 0.50; // 50% discount for 5 or more batteries
+            }
+
+            document.getElementById('discount').textContent = '-₹' + discount.toFixed(2);
+
+            // Calculate total price after applying discount
+            const totalPrice = total + deliveryCharges - discount;
+            document.getElementById('totalPrice').textContent = '₹' + totalPrice.toFixed(2);
+
+            // Show notification
+            if (discount > 0) {
+                showNotification(`Congrats! You have saved ₹${discount.toFixed(2)} by recycling your batteries!`);
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        function proceedToPayment() {
+            alert('Proceeding to payment...');
+            // Implement the payment logic here (integrating with UPI, COD, etc.)
+        }
+
+        // Initial discount calculation on page load
+        calculateDiscount();
+
+        window.onload = function() {
+        if (!localStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+    };
+</script>
+
+    </script>
+    
+    <footer>
+        <p>&copy; 2024 All rights reserved to ALKYLCYKYL</p>
+    </footer>
+</body>
+
+</html>
